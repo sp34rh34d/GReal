@@ -46,13 +46,14 @@ class RCPT_MODULE:
 		Core.Banner()
 		RCPT_MODULE.Banner()
 
+		print(f"{TerminalColor.Orange}Getting MX servers for {RCPT_OPTIONS.TARGET_DOMAIN}{TerminalColor.Reset} ")
 		mx_server_list=[]
 		mx_server_list=pydig.query(RCPT_OPTIONS.TARGET_DOMAIN, 'MX')
 		if mx_server_list:
 			for mx in mx_server_list:
 				print(f'[{TerminalColor.Green}+{TerminalColor.Reset}] {mx}')
 
-		RCPT_OPTIONS.TARGET_MX=input(f"{TerminalColor.Orange}Select an MX server:{TerminalColor.Reset} ")
+		RCPT_OPTIONS.TARGET_MX=input(f"{TerminalColor.Orange}Select MX server:{TerminalColor.Reset} ")
 
 		if not RCPT_OPTIONS.TARGET_MX:
 			print(f'{TerminalColor.Red}Invalid MX server!{TerminalColor.Reset}')
