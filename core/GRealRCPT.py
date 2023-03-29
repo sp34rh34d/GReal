@@ -14,6 +14,7 @@ class RCPT_OPTIONS:
 	TARGET_MX=""
 	THREADS=10
 	FORMAT=""
+	MAIL_RATE=False
 	HELP=False
 
 class RCPT_MODULE:
@@ -23,6 +24,7 @@ class RCPT_MODULE:
 		RCPT_OPTIONS.LASTNAME_LIST=args.lastname_list
 		RCPT_OPTIONS.HELP=args.help 
 		RCPT_OPTIONS.FORMAT=args.format
+		RCPT_OPTIONS.MAIL_RATE=args.mail_rate
 
 		if RCPT_OPTIONS.HELP:
 			RCPT_HELP.Help()
@@ -62,6 +64,10 @@ class RCPT_MODULE:
 		except:
 			print(f'{TerminalColor.Red}Invalid connection to MX server {RCPT_OPTIONS.TARGET_MX}!{TerminalColor.Reset}')
 			sys.exit()
+		
+		if not RCPT_OPTIONS.MAIL_RATE:
+			if RCPT_TASK.NonExistingEmail():
+				sys.exit()
 
 		RCPT_TASK.Threads()
 
@@ -106,6 +112,22 @@ class RCPT_TASK:
 
 			for future in concurrent.futures.as_completed(future_to_url):
 				future.result()
+
+	def NonExistingEmail():
+		try:
+			print(f"[{TerminalColor.Blue}!{TerminalColor.Reset}] {TerminalColor.Orange}Testing MX server for non existing email response...{TerminalColor.Reset}")
+			SMTP_SERVER = SMTP(RCPT_OPTIONS.TARGET_MX)
+			SMTP_SERVER.ehlo(RCPT_OPTIONS.TARGET_DOMAIN)
+			SMTP_SERVER.docmd(f'MAIL FROM:<test@{RCPT_OPTIONS.TARGET_DOMAIN}>')
+			RESULT=str(SMTP_SERVER.docmd(f'RCPT TO:<wakk4k23lem23@{RCPT_OPTIONS.TARGET_DOMAIN}>'))
+
+			if "OK" in RESULT:
+				print(f'{TerminalColor.Red}The MX server [{RCPT_OPTIONS.TARGET_MX}] response with status OK for non existing email.{TerminalColor.Reset}')
+				print(f'{TerminalColor.Orange}Try adding -k arg, example: ./greal rcpt -d {RCPT_OPTIONS.TARGET_DOMAIN} --format {RCPT_OPTIONS.FORMAT} -k {TerminalColor.Reset}')
+				return True
+					
+		except:
+			pass
 
 	def Format1():
 		f = open(RCPT_OPTIONS.FIRSTNAME_LIST,'r')
@@ -177,11 +199,16 @@ class RCPT_TASK:
 			SMTP_SERVER.docmd(f'MAIL FROM:<test@{RCPT_OPTIONS.TARGET_DOMAIN}>')
 			RESULT=str(SMTP_SERVER.docmd(f'RCPT TO:<{account}@{RCPT_OPTIONS.TARGET_DOMAIN}>'))
 
-			if not "not exist." in RESULT and not "Access denied." in RESULT:
-				if "Server busy." in RESULT:
-					print(f'{TerminalColor.Red}The MX server [{RCPT_OPTIONS.TARGET_MX}] response with status 500 Server busy, please try later.{TerminalColor.Reset}')
-					sys.exit()
-				print(f'[{TerminalColor.Green}+{TerminalColor.Reset}] {TerminalColor.Green}{account}@{RCPT_OPTIONS.TARGET_DOMAIN}{TerminalColor.Reset}                                                                            ')
+			if RCPT_OPTIONS.MAIL_RATE:
+				if "receiving mail at a rate" in RESULT:
+					print(f'[{TerminalColor.Green}+{TerminalColor.Reset}] {TerminalColor.Green}{account}@{RCPT_OPTIONS.TARGET_DOMAIN}{TerminalColor.Reset}                                                                            ')
+			else:
+
+				if not "not exist." in RESULT and not "Access denied." in RESULT:
+					if "Server busy." in RESULT:
+						print(f'{TerminalColor.Red}The MX server [{RCPT_OPTIONS.TARGET_MX}] response with status 500 Server busy, please try later.{TerminalColor.Reset}')
+						sys.exit()
+					print(f'[{TerminalColor.Green}+{TerminalColor.Reset}] {TerminalColor.Green}{account}@{RCPT_OPTIONS.TARGET_DOMAIN}{TerminalColor.Reset}                                                                            ')
 		except:
 			pass
 
@@ -206,6 +233,7 @@ Args
 		                      [ 4 - FLastname ]
 		                      [ 5 - firstname ]
 
+	-k, --mail-rate           Ignore 'OK' response and show only email with 'receiving mail at a rate ' status response
 	-h, --help                show this message
 
 Examples:
