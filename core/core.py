@@ -28,7 +28,7 @@ d88P  Y88b 888   Y88b                   888
 Y88b  d88P 888  T88b  Y8b.     888  888 888 
  'Y8888P88 888   T88b  'Y8888  'Y888888 888
 
-Coded by:{TerminalColor.Red} Adonis Izaguirre {TerminalColor.Reset} Email:{TerminalColor.Red} adonis.izaguirre@kapa7.com / adons@outlook.com {TerminalColor.Reset}
+Coded by:{TerminalColor.Red} sp34rh34d {TerminalColor.Reset} Email:{TerminalColor.Red} adonis.izaguirre@kapa7.com / adons@outlook.com {TerminalColor.Reset}
 twitter: {TerminalColor.Red}@AdonsIzaguirre{TerminalColor.Reset}
 Welcome to GReal v1.1 [{TerminalColor.Green}https://github.com/AdonsIzaguirre/GReal{TerminalColor.Reset}]
 ======================================================================================================""")
